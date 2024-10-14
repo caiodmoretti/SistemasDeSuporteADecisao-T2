@@ -1,8 +1,10 @@
-package crawler;
+package impl;
 
 
 import org.apache.jena.rdf.model.*;
 import org.apache.jena.vocabulary.OWL;
+
+import crawler.SemanticCrawler;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -15,7 +17,7 @@ public class SemanticCrawlerImpl implements SemanticCrawler {
     public void search(Model model, String resourceURI) {
     	System.out.println("Verificando a URI " + resourceURI);
         if (visitedURIs.contains(resourceURI)) {
-        	System.out.println("URI já foi visitada.");
+        	System.out.println("A URI "+ resourceURI + " já foi visitada");
             return; 
         }
 
@@ -37,7 +39,7 @@ public class SemanticCrawlerImpl implements SemanticCrawler {
             // Carrega o documento RDF do URI
             model.read(uri);
         } catch (Exception e) {
-            System.err.println("Erro ao dereferenciar o URI: " + uri);
+            System.err.println("Erro ao dereferenciar a URI: " + uri);
         }
         return model;
     }
@@ -52,13 +54,13 @@ public class SemanticCrawlerImpl implements SemanticCrawler {
     }
 
     private void navigateLinks(Model model, Model resourceModel, String resourceURI) {
-        System.out.println("Navegando pelas triplas com a propriendade OWL.sameAs");
+        // Navega pelas triplas com owl:sameAs
         StmtIterator sameAsStmtIterator = resourceModel.listStatements(ResourceFactory.createResource(resourceURI), OWL.sameAs, (RDFNode) null);
         while (sameAsStmtIterator.hasNext()) {
             Statement stmt = sameAsStmtIterator.nextStatement();
             RDFNode objectNode = stmt.getObject();
             if (objectNode.isResource()) {
-                // Se o objeto for um recurso, chama recursivamente
+                // Se o objeto for um recurso, chamada recursiva
                 search(model, objectNode.asResource().getURI());
             } else if (objectNode.isAnon()) {
                 // Se o objeto for um nó em branco, coleta mais fatos
@@ -71,7 +73,7 @@ public class SemanticCrawlerImpl implements SemanticCrawler {
         while (inverseSameAsStmtIterator.hasNext()) {
             Statement stmt = inverseSameAsStmtIterator.nextStatement();
             Resource subjectResource = stmt.getSubject();
-            search(model, subjectResource.getURI()); // Chama recursivamente
+            search(model, subjectResource.getURI()); // Chamada recursiva
         }
     }
 
