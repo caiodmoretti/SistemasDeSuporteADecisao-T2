@@ -7,7 +7,7 @@ import org.apache.jena.rdf.model.ModelFactory;
 public class MainTest {
 
 	
-	public static final String INITIAL_URI = "http://dbpedia.org/resource/Roger_Federer";
+	public static final String INITIAL_URI = "http://dbpedia.org/resource/Roberto_Ribeiro";
 	
 	public static void main(String[] args) {
 		Model model = ModelFactory.createDefaultModel();

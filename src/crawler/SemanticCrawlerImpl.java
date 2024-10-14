@@ -13,8 +13,10 @@ public class SemanticCrawlerImpl implements SemanticCrawler {
     private Set<String> visitedURIs = new HashSet<>();
 
     public void search(Model model, String resourceURI) {
+    	System.out.println("Verificando a URI " + resourceURI);
         if (visitedURIs.contains(resourceURI)) {
-            return; // Retorna se o URI já foi visitado
+        	System.out.println("URI já foi visitada.");
+            return; 
         }
 
         visitedURIs.add(resourceURI); // Marca o URI como visitado
@@ -50,7 +52,7 @@ public class SemanticCrawlerImpl implements SemanticCrawler {
     }
 
     private void navigateLinks(Model model, Model resourceModel, String resourceURI) {
-        // Navega pelas triplas com owl:sameAs
+        System.out.println("Navegando pelas triplas com a propriendade OWL.sameAs");
         StmtIterator sameAsStmtIterator = resourceModel.listStatements(ResourceFactory.createResource(resourceURI), OWL.sameAs, (RDFNode) null);
         while (sameAsStmtIterator.hasNext()) {
             Statement stmt = sameAsStmtIterator.nextStatement();
