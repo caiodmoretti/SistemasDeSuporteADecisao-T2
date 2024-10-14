@@ -9,27 +9,31 @@ import crawler.SemanticCrawler;
 import java.util.HashSet;
 import java.util.Set;
 
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetEncoder;
+
 public class SemanticCrawlerImpl implements SemanticCrawler {
 
-    // Conjunto para armazenar URIs já visitados
+    // Conjunto para armazenar URIs jï¿½ visitados
     private Set<String> visitedURIs = new HashSet<>();
+    CharsetEncoder enc = Charset.forName("ISO-8859-1").newEncoder();
 
     public void search(Model model, String resourceURI) {
     	System.out.println("Verificando a URI " + resourceURI);
         if (visitedURIs.contains(resourceURI)) {
-        	System.out.println("A URI "+ resourceURI + " já foi visitada");
+        	System.out.println("A URI "+ resourceURI + " jï¿½ foi visitada");
             return; 
         }
-
         visitedURIs.add(resourceURI); // Marca o URI como visitado
-
-        // 1. Dereferenciar o URI e obter um documento RDF
-        Model resourceModel = dereferenceURI(resourceURI);
-        if (resourceModel != null) {
-            // 2. Coletar os fatos sobre o recurso
-            collectFacts(model, resourceModel, resourceURI);
-            // 3. Navegar pelos links
-            navigateLinks(model, resourceModel, resourceURI);
+        if(enc.canEncode(resourceURI)) {
+        	// 1. Dereferenciar o URI e obter um documento RDF
+        	Model resourceModel = dereferenceURI(resourceURI);
+        	if (resourceModel != null) {
+        		// 2. Coletar os fatos sobre o recurso
+        		collectFacts(model, resourceModel, resourceURI);
+        		// 3. Navegar pelos links
+        		navigateLinks(model, resourceModel, resourceURI);
+        	}
         }
     }
 
@@ -45,11 +49,11 @@ public class SemanticCrawlerImpl implements SemanticCrawler {
     }
 
     private void collectFacts(Model model, Model resourceModel, String resourceURI) {
-        // Coleta todas as triplas que têm o URI como sujeito
+        // Coleta todas as triplas que tï¿½m o URI como sujeito
         StmtIterator stmtIterator = resourceModel.listStatements(ResourceFactory.createResource(resourceURI), null, (RDFNode) null);
         while (stmtIterator.hasNext()) {
             Statement stmt = stmtIterator.nextStatement();
-            model.add(stmt); // Adiciona a tripla ao grafo passado como parâmetro
+            model.add(stmt); // Adiciona a tripla ao grafo passado como parï¿½metro
         }
     }
 
@@ -63,12 +67,12 @@ public class SemanticCrawlerImpl implements SemanticCrawler {
                 // Se o objeto for um recurso, chamada recursiva
                 search(model, objectNode.asResource().getURI());
             } else if (objectNode.isAnon()) {
-                // Se o objeto for um nó em branco, coleta mais fatos
+                // Se o objeto for um nï¿½ em branco, coleta mais fatos
                 collectFactsFromBlankNode(model, objectNode);
             }
         }
 
-        // Navega pelas triplas onde o recursoURI é o objeto
+        // Navega pelas triplas onde o recursoURI ï¿½ o objeto
         StmtIterator inverseSameAsStmtIterator = resourceModel.listStatements((Resource) null, OWL.sameAs, ResourceFactory.createResource(resourceURI));
         while (inverseSameAsStmtIterator.hasNext()) {
             Statement stmt = inverseSameAsStmtIterator.nextStatement();
@@ -78,12 +82,12 @@ public class SemanticCrawlerImpl implements SemanticCrawler {
     }
 
     private void collectFactsFromBlankNode(Model model, RDFNode blankNode) {
-        // Coleta todas as triplas que têm o nó em branco como sujeito
+        // Coleta todas as triplas que tï¿½m o nï¿½ em branco como sujeito
         StmtIterator stmtIterator = model.listStatements((Resource) blankNode, null, (RDFNode) null);
         while (stmtIterator.hasNext()) {
             Statement stmt = stmtIterator.nextStatement();
             model.add(stmt);
-            // Se o objeto for um nó em branco, repete a coleta
+            // Se o objeto for um nï¿½ em branco, repete a coleta
             if (stmt.getObject().isAnon()) {
                 collectFactsFromBlankNode(model, stmt.getObject());
             }
