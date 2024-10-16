@@ -1,0 +1,8 @@
+Erro ao dereferenciar a URI <http://data.europa.eu/euodp/jrc-names/Roberto_Ribeiro>
+Erro: [line: 5, col: 56] {E201} Multiple children of property elemento
+
+Erro ao dereferenciar a URI <http://pt.dbpedia.org/resource/Roberto_Ribeiro>
+Erro: 500 - Server Error
+
+Erro ao dereferenciar a URI <http://rdf.freebase.com/ns/m.04ljpcz>
+Erro: Not found: http://rdf.freebase.com/ns/m.04ljpcz

@@ -11,17 +11,19 @@ import java.util.Set;
 
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetEncoder;
+import java.nio.charset.StandardCharsets;
 
 public class SemanticCrawlerImpl implements SemanticCrawler {
 
-    // Conjunto para armazenar URIs j� visitados
-    private Set<String> visitedURIs = new HashSet<>();
-    CharsetEncoder enc = Charset.forName("ISO-8859-1").newEncoder();
+    // Conjunto para armazenar URIs ja visitados
+     
+	Set<String> visitedURIs = new HashSet<>();
+	CharsetEncoder enc = StandardCharsets.UTF_8.newEncoder();
 
     public void search(Model model, String resourceURI) {
     	System.out.println("Verificando a URI " + resourceURI);
         if (visitedURIs.contains(resourceURI)) {
-        	System.out.println("A URI "+ resourceURI + " j� foi visitada");
+        	System.out.println("A URI "+ resourceURI + " ja foi visitada");
             return; 
         }
         visitedURIs.add(resourceURI); // Marca o URI como visitado
@@ -35,6 +37,7 @@ public class SemanticCrawlerImpl implements SemanticCrawler {
         		navigateLinks(model, resourceModel, resourceURI);
         	}
         }
+
     }
 
     private Model dereferenceURI(String uri) {
@@ -49,7 +52,7 @@ public class SemanticCrawlerImpl implements SemanticCrawler {
     }
 
     private void collectFacts(Model model, Model resourceModel, String resourceURI) {
-        // Coleta todas as triplas que t�m o URI como sujeito
+        // Coleta todas as triplas que tem o URI como sujeito
         StmtIterator stmtIterator = resourceModel.listStatements(ResourceFactory.createResource(resourceURI), null, (RDFNode) null);
         while (stmtIterator.hasNext()) {
             Statement stmt = stmtIterator.nextStatement();
@@ -72,7 +75,7 @@ public class SemanticCrawlerImpl implements SemanticCrawler {
             }
         }
 
-        // Navega pelas triplas onde o recursoURI � o objeto
+        // Navega pelas triplas onde o recursoURI e o objeto
         StmtIterator inverseSameAsStmtIterator = resourceModel.listStatements((Resource) null, OWL.sameAs, ResourceFactory.createResource(resourceURI));
         while (inverseSameAsStmtIterator.hasNext()) {
             Statement stmt = inverseSameAsStmtIterator.nextStatement();
@@ -82,12 +85,12 @@ public class SemanticCrawlerImpl implements SemanticCrawler {
     }
 
     private void collectFactsFromBlankNode(Model model, RDFNode blankNode) {
-        // Coleta todas as triplas que t�m o n� em branco como sujeito
+        // Coleta todas as triplas que tem o no em branco como sujeito
         StmtIterator stmtIterator = model.listStatements((Resource) blankNode, null, (RDFNode) null);
         while (stmtIterator.hasNext()) {
             Statement stmt = stmtIterator.nextStatement();
             model.add(stmt);
-            // Se o objeto for um n� em branco, repete a coleta
+            // Se o objeto for um no em branco, repete a coleta
             if (stmt.getObject().isAnon()) {
                 collectFactsFromBlankNode(model, stmt.getObject());
             }
